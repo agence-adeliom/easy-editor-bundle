@@ -1,0 +1,36 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    _instanceof:
+        Adeliom\EasyEditorBundle\Block\BlockInterface:
+            tags: [ 'easy_editor.block' ]
+
+    Adeliom\EasyEditorBundle\Block\BlockCollection:
+        autoconfigure: true
+        public: true
+        arguments:
+            - !tagged easy_editor.block
+
+    easy_editor.block_collection:
+        alias: Adeliom\EasyEditorBundle\Block\BlockCollection
+
+    Adeliom\EasyEditorBundle\Blocks\:
+        resource: '../../Blocks/'
+
+    Adeliom\EasyEditorBundle\Form\EditorCollectionType:
+        public: true
+
+    Adeliom\EasyEditorBundle\Admin\Field\Configurator\EasyEditorConfigurator:
+        public: true
+
+    Adeliom\EasyEditorBundle\Twig\EasyBlockExtension:
+        public: true
+        tags:
+            - { name: twig.extension }
+
+    easy_editor.twig_extension:
+        alias: Adeliom\EasyEditorBundle\Twig\EasyBlockExtension
+
+
