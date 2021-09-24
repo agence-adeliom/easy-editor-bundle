@@ -4,9 +4,7 @@ namespace Adeliom\EasyEditorBundle\Admin\Field;
 
 use Adeliom\EasyEditorBundle\Form\EditorCollectionType;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FieldTrait;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 /**
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>

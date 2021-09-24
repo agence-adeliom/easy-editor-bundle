@@ -2,8 +2,8 @@
 
 namespace Adeliom\EasyEditorBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Adeliom\EasyEditorBundle\DependencyInjection\EasyEditorExtension;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class EasyEditorBundle extends Bundle
 {

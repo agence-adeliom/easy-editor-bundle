@@ -2,22 +2,11 @@
 namespace Adeliom\EasyEditorBundle\Blocks;
 
 use Adeliom\EasyEditorBundle\Block\AbstractBlock;
-use Adeliom\EasyEditorBundle\Block\BlockInterface;
-use Adeliom\EasyMediaBundle\Form\EasyMediaType;
 use App\Entity\Article;
-use Doctrine\Common\Collections\ArrayCollection;
-use FOS\CKEditorBundle\Form\Type\CKEditorType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class ListType extends AbstractBlock
 {

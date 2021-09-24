@@ -3,10 +3,7 @@
 namespace Adeliom\EasyEditorBundle\Form;
 
 use Adeliom\EasyEditorBundle\Block\BlockCollection;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;

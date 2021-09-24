@@ -2,13 +2,11 @@
 
 namespace Adeliom\EasyEditorBundle\Twig;
 
-use Adeliom\EasyEditorBundle\Block\AbstractBlock;
 use Adeliom\EasyEditorBundle\Block\BlockCollection;
 use Adeliom\EasyEditorBundle\Editor\Editor;
 use Adeliom\EasyEditorBundle\Editor\EditorConfig;
 use Adeliom\EasyEditorBundle\Editor\EditorConfigCollection;
 use Adeliom\EasyEditorBundle\Form\EditorjsTransformer;
-use Symfony\Bridge\Twig\Form\TwigRendererEngine;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Twig\Environment;
