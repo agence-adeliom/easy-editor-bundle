@@ -16,9 +16,6 @@ services:
     easy_editor.block_collection:
         alias: Adeliom\EasyEditorBundle\Block\BlockCollection
 
-    Adeliom\EasyEditorBundle\Blocks\:
-        resource: '../../Blocks/'
-
     Adeliom\EasyEditorBundle\Form\EditorCollectionType:
         public: true
 
