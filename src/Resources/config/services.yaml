@@ -30,4 +30,10 @@ services:
     easy_editor.twig_extension:
         alias: Adeliom\EasyEditorBundle\Twig\EasyBlockExtension
 
-
+    easy_editor.maker.make_block:
+        class: Adeliom\EasyEditorBundle\Maker\MakeBlock
+        public: false
+        arguments:
+            - '@maker.file_manager'
+        tags:
+            - { name: maker.command }
