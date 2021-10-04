@@ -14,12 +14,12 @@ class <?= $class_name; ?> extends AbstractBlock<?= "\n" ?>
 
     public function getName(): string
     {
-        return 'Heading';
+        return '<?= $class_name; ?>';
     }
 
     public function getIcon(): string
     {
-        return '<?= $class_name; ?>';
+        return '';
     }
 
     public function getTemplate(): string
