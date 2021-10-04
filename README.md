@@ -22,8 +22,62 @@ composer require agence-adeliom/easy-editor-bundle
 
 ## Documentation
 
-TODO
+### Usage
 
+#### Entity
+
+```php
+class Article
+{
+    /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    private $content = [];
+}
+```
+
+#### CRUD Controller
+```php
+class ArticleCrudController extends AbstractCrudController
+{
+    public function configureFields(string $pageName): iterable
+    {
+        yield EasyEditorField::new('content');
+    }
+}
+```
+
+#### Twig template
+```twig
+{% for block in object.content %}
+    {{ render_easy_editor_block(block) }}
+{% endfor %}
+```
+
+### Create a new type
+
+```bash
+bin/console make:block
+```
+
+### Events
+
+#### easy_editor.render_block
+```php
+use Symfony\Contracts\EventDispatcher\Event;
+
+$dispatcher->addListener('easy_editor.render_block', function (Event $event) {
+    // will be executed when the easy_editor.render_block event is dispatched
+    
+    // Get
+    $block = $event->getArgument('block');
+    $datas = $event->getArgument('datas');
+    
+    // Set
+    $event->setArgument("block", $block);
+    $event->setArgument("datas", $datas);
+});
+```
 
 ## License
 
