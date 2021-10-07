@@ -41,6 +41,14 @@ class Article
 ```php
 class ArticleCrudController extends AbstractCrudController
 {
+    // Add the custom form theme
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->addFormTheme('@EasyEditor/form/editor_widget.html.twig')
+            ;
+    }
+
     public function configureFields(string $pageName): iterable
     {
         yield EasyEditorField::new('content');
