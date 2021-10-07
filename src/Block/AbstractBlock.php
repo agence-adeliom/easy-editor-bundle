@@ -57,4 +57,13 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
             'cascade_validation' => true,
         ]);
     }
+
+    public function configureAssets(): array
+    {
+        return [
+            "js" => [],
+            "css" => [],
+            "webpack" => [],
+        ];
+    }
 }

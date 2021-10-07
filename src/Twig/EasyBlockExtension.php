@@ -3,6 +3,7 @@
 namespace Adeliom\EasyEditorBundle\Twig;
 
 use Adeliom\EasyEditorBundle\Block\BlockCollection;
+use Adeliom\EasyEditorBundle\Block\Helper;
 use Adeliom\EasyEditorBundle\Editor\Editor;
 use Adeliom\EasyEditorBundle\Editor\EditorConfig;
 use Adeliom\EasyEditorBundle\Editor\EditorConfigCollection;
@@ -17,56 +18,14 @@ use Twig\TwigFunction;
 class EasyBlockExtension extends AbstractExtension
 {
     /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
-     * @var BlockCollection
-     */
-    private $collection;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection)
-    {
-        $this->twig = $twig;
-        $this->collection = $collection;
-        $this->eventDispatcher = $eventDispatcher;
-    }
-
-    /**
      * @return TwigFunction[]
      */
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('render_easy_editor_block', [$this, 'renderEasyEditorBlock'], ['is_safe' => ['js', 'html'], 'needs_context' => true, 'needs_environment' => true]),
+            new TwigFunction('easy_editor_block', [Helper::class, 'renderEasyEditorBlock'], ['is_safe' => ['js', 'html'], 'needs_context' => true, 'needs_environment' => true]),
+            new TwigFunction('easy_editor_assets', [Helper::class, 'includeAssets'], ['is_safe' => ['js', 'html'], 'needs_context' => true, 'needs_environment' => true]),
         ];
-    }
-
-    /**
-     * @param array $datas
-     */
-    public function renderEasyEditorBlock(Environment $env, array $context, $datas, $extra = [])
-    {
-        $block = $this->collection->getBlocks()[$datas["block_type"]];
-
-        $event = new GenericEvent(null, ['datas' => $datas, "block" => $block ]);
-        /**
-         * @var GenericEvent $result;
-         */
-        $result = $this->eventDispatcher->dispatch($event, "easy_editor.render_block");
-
-        $block = $result->getArgument('block');
-        $datas = $result->getArgument('datas');
-
-        return new Markup($this->twig->render($block->getTemplate(), array_merge($context, [
-            "block" => $datas
-        ], $extra)), 'UTF-8');
     }
 
 }

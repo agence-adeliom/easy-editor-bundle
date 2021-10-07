@@ -30,6 +30,18 @@ services:
     easy_editor.twig_extension:
         alias: Adeliom\EasyEditorBundle\Twig\EasyBlockExtension
 
+    Adeliom\EasyEditorBundle\Block\Helper:
+        public: true
+        arguments:
+            - '@twig'
+            - '@event_dispatcher'
+            - '@easy_editor.block_collection'
+        tags:
+            - { name: twig.runtime }
+
+    easy_editor.block_helper:
+        alias: Adeliom\EasyEditorBundle\Block\Helper
+
     easy_editor.maker.make_block:
         class: Adeliom\EasyEditorBundle\Maker\MakeBlock
         public: false
@@ -37,3 +49,11 @@ services:
             - '@maker.file_manager'
         tags:
             - { name: maker.command }
+
+    Adeliom\EasyEditorBundle\DataCollector\EditorCollector:
+        arguments:
+            - "@easy_editor.block_helper"
+        tags:
+            - name: data_collector
+              template: '@EasyEditor/profiler/collector.html.twig'
+              id: Adeliom\EasyEditorBundle\DataCollector\EditorCollector
