@@ -57,7 +57,7 @@ class ArticleCrudController extends AbstractCrudController
 ```
 
 #### Twig template
-```twig
+```php
 {% for block in object.content %}
     {{ easy_editor_block(block) }}
 {% endfor %}
