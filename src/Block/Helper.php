@@ -4,6 +4,7 @@ namespace Adeliom\EasyEditorBundle\Block;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -41,11 +42,17 @@ class Helper
      */
     private $twig;
 
-    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection)
+    /**
+     * @var FormFactory
+     */
+    private $formFactory;
+
+    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection, FormFactory  $formFactory)
     {
         $this->twig = $twig;
         $this->collection = $collection;
         $this->eventDispatcher = $eventDispatcher;
+        $this->formFactory = $formFactory;
 
         $this->assets = [
             'js' => [],
@@ -124,16 +131,21 @@ class Helper
     {
         $block = $this->collection->getBlocks()[$datas["block_type"]];
         $stats = $this->startTracing($block);
+        $blockType = $datas["block_type"];
 
-        $event = new GenericEvent(null, ['datas' => $datas, "block" => $block, 'assets' => $block->configureAssets() ]);
+        // Tranform settings way 1 : use blockType form transformers
+        $blockSettings = $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas);
+
+        // Tranform settings way 2 : with dispatch / event listeners
+        $event = new GenericEvent(null, ['settings' => $blockSettings, "block" => $block, 'assets' => $block->configureAssets() ]);
         /**
          * @var GenericEvent $result;
          */
         $result = $this->eventDispatcher->dispatch($event, "easy_editor.render_block");
 
+
         $block = $result->getArgument('block');
-        $datas = $result->getArgument('datas');
-        $blockDatas = $datas;
+        $blockDatas = $result->getArgument('settings');
 
         if(isset($blockDatas["block_type"])){
             unset($blockDatas["block_type"]);
@@ -144,7 +156,7 @@ class Helper
             unset($blockDatas["position"]);
         }
 
-        $stats["datas"] = $blockDatas;
+        $stats["settings"] = $blockDatas;
         $stats["assets"] = $result->getArgument('assets');
 
         $this->assets = array_merge($this->assets, $stats["assets"]);
@@ -152,8 +164,35 @@ class Helper
         $this->stopTracing($stats["id"], $stats);
 
         return new Markup($this->twig->render($block->getTemplate(), array_merge($context, [
-            "block" => $datas
+            "block" => $block,
+            "blockType" => $blockType,
+            "settings" => $blockDatas,
         ], $extra)), 'UTF-8');
+    }
+
+    public function transformSettingsWithBlockTypeFormBuild($blockType, $block, $defaultSetting) {
+
+        $formBuilder = $this->formFactory->createBuilder($block->getType(), null, ['csrf_protection' => false]);
+
+        // init blockType form builder
+        $blockType->buildBlock($formBuilder, []);
+
+        // Submit to use optionnal form transformers
+        $form = $formBuilder->getForm();
+        $form->submit(array_merge($defaultSetting, $block->getSettings()));
+
+        // Put norm datas into block settings
+        // norm data are transfomed data
+        $blockSettings = $form->getNormData();
+        if (!empty($form->getNormData())) {
+            foreach ($form->getNormData() as $field => $value) {
+                if (!empty($form->get($field))) {
+                    $blockSettings[$field] = $form->get($field)->getNormData();
+                }
+            }
+        }
+
+        return $blockSettings;
     }
 
 }

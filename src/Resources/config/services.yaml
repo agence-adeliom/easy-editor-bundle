@@ -36,6 +36,7 @@ services:
             - '@twig'
             - '@event_dispatcher'
             - '@easy_editor.block_collection'
+            - '@form.factory'
         tags:
             - { name: twig.runtime }
 

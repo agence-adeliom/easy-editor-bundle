@@ -77,14 +77,14 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 $dispatcher->addListener('easy_editor.render_block', function (Event $event) {
     // will be executed when the easy_editor.render_block event is dispatched
-    
+
     // Get
     $block = $event->getArgument('block');
-    $datas = $event->getArgument('datas');
-    
+    $settings = $event->getArgument('settings');
+
     // Set
     $event->setArgument("block", $block);
-    $event->setArgument("datas", $datas);
+    $event->setArgument("settings", $settings);
 });
 ```
 
@@ -97,4 +97,4 @@ $dispatcher->addListener('easy_editor.render_block', function (Event $event) {
 
 - [@arnaud-ritti](https://github.com/arnaud-ritti)
 
-  
+
