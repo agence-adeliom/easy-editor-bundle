@@ -37,6 +37,7 @@ services:
             - '@event_dispatcher'
             - '@easy_editor.block_collection'
             - '@form.factory'
+            - '@doctrine.orm.entity_manager'
         tags:
             - { name: twig.runtime }
 

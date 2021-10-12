@@ -2,6 +2,7 @@
 
 namespace Adeliom\EasyEditorBundle\Block;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\FormFactory;
@@ -47,12 +48,18 @@ class Helper
      */
     private $formFactory;
 
-    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection, FormFactory  $formFactory)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection, FormFactory  $formFactory, EntityManagerInterface $em)
     {
         $this->twig = $twig;
         $this->collection = $collection;
         $this->eventDispatcher = $eventDispatcher;
         $this->formFactory = $formFactory;
+        $this->em = $em;
 
         $this->assets = [
             'js' => [],
@@ -134,7 +141,7 @@ class Helper
         $blockType = $datas["block_type"];
 
         // Tranform settings way 1 : use blockType form transformers
-        $blockSettings = $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas);
+        $blockSettings = $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas['block']);
 
         // Tranform settings way 2 : with dispatch / event listeners
         $event = new GenericEvent(null, ['settings' => $blockSettings, "block" => $block, 'assets' => $block->configureAssets() ]);
@@ -164,7 +171,7 @@ class Helper
         $this->stopTracing($stats["id"], $stats);
 
         return new Markup($this->twig->render($block->getTemplate(), array_merge($context, [
-            "block" => $block,
+            "block" => $datas,
             "blockType" => $blockType,
             "settings" => $blockDatas,
         ], $extra)), 'UTF-8');
@@ -172,14 +179,14 @@ class Helper
 
     public function transformSettingsWithBlockTypeFormBuild($blockType, $block, $defaultSetting) {
 
-        $formBuilder = $this->formFactory->createBuilder($block->getType(), null, ['csrf_protection' => false]);
+        $formBuilder = $this->formFactory->createBuilder($blockType, null, ['csrf_protection' => false, 'allow_extra_fields' => true]);
 
         // init blockType form builder
-        $blockType->buildBlock($formBuilder, []);
+        $block->buildBlock($formBuilder, $defaultSetting);
 
         // Submit to use optionnal form transformers
         $form = $formBuilder->getForm();
-        $form->submit(array_merge($defaultSetting, $block->getSettings()));
+        $form->submit($defaultSetting);
 
         // Put norm datas into block settings
         // norm data are transfomed data
