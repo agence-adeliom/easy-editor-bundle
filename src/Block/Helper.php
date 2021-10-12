@@ -141,7 +141,7 @@ class Helper
         $blockType = $datas["block_type"];
 
         // Tranform settings way 1 : use blockType form transformers
-        $blockSettings = $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas['block']);
+        $blockSettings = isset($datas['block']) ? $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas['block']) : $datas;
 
         // Tranform settings way 2 : with dispatch / event listeners
         $event = new GenericEvent(null, ['settings' => $blockSettings, "block" => $block, 'assets' => $block->configureAssets() ]);
