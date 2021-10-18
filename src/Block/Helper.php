@@ -77,26 +77,32 @@ class Helper
     {
         $html = '';
 
-        if (!empty($this->assets['css'])){
-            $html .= "<style media='all'>";
+        if (!empty($this->assets['css'])) {
+            if (!empty($this->assets['css'])) {
+                $html .= "<style media='all'>";
 
-            foreach ($this->assets['css'] as $stylesheet) {
-                $html .= "\n".sprintf('@import url(%s);', $stylesheet);
+                foreach ($this->assets['css'] as $stylesheet) {
+                    $html .= "\n" . sprintf('@import url(%s);', $stylesheet);
+                }
+
+                $html .= "\n</style>";
             }
-
-            $html .= "\n</style>";
         }
 
-        foreach ($this->assets['js'] as $javascript) {
-            $html .= "\n".sprintf('<script src="%s" type="text/javascript"></script>', $javascript);
+        if (!empty($this->assets['js'])) {
+            foreach ($this->assets['js'] as $javascript) {
+                $html .= "\n" . sprintf('<script src="%s" type="text/javascript"></script>', $javascript);
+            }
         }
 
-        foreach ($this->assets['webpack'] as $webpack) {
-            try {
-                $html .= "\n" . $this->twig->createTemplate(sprintf("{{ encore_entry_link_tags('%s') }}", $webpack))->render();
-                $html .= "\n".$this->twig->createTemplate(sprintf("{{ encore_entry_script_tags('%s') }}", $webpack))->render();
-            } catch (LoaderError | SyntaxError $e) {
-                $html .= "";
+        if (!empty($this->assets['webpack'])) {
+            foreach ($this->assets['webpack'] as $webpack) {
+                try {
+                    $html .= "\n" . $this->twig->createTemplate(sprintf("{{ encore_entry_link_tags('%s') }}", $webpack))->render();
+                    $html .= "\n".$this->twig->createTemplate(sprintf("{{ encore_entry_script_tags('%s') }}", $webpack))->render();
+                } catch (LoaderError | SyntaxError $e) {
+                    $html .= "";
+                }
             }
         }
         return $html;
@@ -140,16 +146,13 @@ class Helper
         $stats = $this->startTracing($block);
         $blockType = $datas["block_type"];
 
-        // Tranform settings way 1 : use blockType form transformers
-        $blockSettings = isset($datas['block']) ? $this->transformSettingsWithBlockTypeFormBuild($blockType, $block, $datas['block']) : $datas;
+        $blockSettings = $datas;
 
-        // Tranform settings way 2 : with dispatch / event listeners
         $event = new GenericEvent(null, ['settings' => $blockSettings, "block" => $block, 'assets' => $block->configureAssets() ]);
         /**
          * @var GenericEvent $result;
          */
         $result = $this->eventDispatcher->dispatch($event, "easy_editor.render_block");
-
 
         $block = $result->getArgument('block');
         $blockDatas = $result->getArgument('settings');
@@ -166,7 +169,9 @@ class Helper
         $stats["settings"] = $blockDatas;
         $stats["assets"] = $result->getArgument('assets');
 
-        $this->assets = array_merge($this->assets, $stats["assets"]);
+        dump($blockSettings);
+
+        $this->assets = array_merge_recursive($this->assets, $stats["assets"]);
 
         $this->stopTracing($stats["id"], $stats);
 
@@ -175,31 +180,6 @@ class Helper
             "blockType" => $blockType,
             "settings" => $blockDatas,
         ], $extra)), 'UTF-8');
-    }
-
-    public function transformSettingsWithBlockTypeFormBuild($blockType, $block, $defaultSetting) {
-
-        $formBuilder = $this->formFactory->createBuilder($blockType, null, ['csrf_protection' => false, 'allow_extra_fields' => true]);
-
-        // init blockType form builder
-        $block->buildBlock($formBuilder, $defaultSetting);
-
-        // Submit to use optionnal form transformers
-        $form = $formBuilder->getForm();
-        $form->submit($defaultSetting);
-
-        // Put norm datas into block settings
-        // norm data are transfomed data
-        $blockSettings = $form->getNormData();
-        if (!empty($form->getNormData())) {
-            foreach ($form->getNormData() as $field => $value) {
-                if (!empty($form->get($field))) {
-                    $blockSettings[$field] = $form->get($field)->getNormData();
-                }
-            }
-        }
-
-        return $blockSettings;
     }
 
 }
