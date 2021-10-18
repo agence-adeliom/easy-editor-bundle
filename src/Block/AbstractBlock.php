@@ -58,7 +58,7 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         ]);
     }
 
-    public function configureAssets(): array
+    public static function configureAssets(): array
     {
         return [
             "js" => [],
