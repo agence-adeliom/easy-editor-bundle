@@ -66,4 +66,9 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
             "webpack" => [],
         ];
     }
+
+    public static function indexableProperties(): array
+    {
+        return [];
+    }
 }
