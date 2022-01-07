@@ -170,8 +170,6 @@ class Helper
         $stats["settings"] = $blockDatas;
         $stats["assets"] = $result->getArgument('assets');
 
-        dump($blockSettings);
-
         $this->assets = array_merge_recursive($this->assets, $stats["assets"]);
 
         $this->stopTracing($stats["id"], $stats);
