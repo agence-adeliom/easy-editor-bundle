@@ -2,15 +2,13 @@ import Sortable from 'sortablejs';
 
 
 const eaEditorHandler = function (event) {
-    if(event.type === "DOMContentLoaded") {
-        document.querySelectorAll('button.field-editor-add-button').forEach((addButton) => {
-            const collection = addButton.closest('[data-ea-collection-field]');
-
-            EaEditorCollectionProperty.handleAddButton(addButton, collection);
-            EaEditorCollectionProperty.updateCollectionItemCssClasses(collection);
-            EaEditorCollectionProperty.updateCollectionSortable(collection);
-        });
-    }
+    document.querySelectorAll('button.field-editor-add-button:not(.processed)').forEach((addButton) => {
+        const collection = addButton.closest('[data-ea-collection-field]');
+        addButton.classList.add('processed');
+        EaEditorCollectionProperty.handleAddButton(addButton, collection);
+        EaEditorCollectionProperty.updateCollectionItemCssClasses(collection);
+        EaEditorCollectionProperty.updateCollectionSortable(collection);
+    });
 
     document.querySelectorAll('button.field-editor-remove-button').forEach((deleteButton) => {
         deleteButton.addEventListener('click', () => {
@@ -42,7 +40,7 @@ const eaEditorHandler = function (event) {
 
 window.addEventListener('DOMContentLoaded', eaEditorHandler);
 document.addEventListener('ea.editor.item-added', eaEditorHandler);
-
+document.addEventListener('ea.collection.item-added', eaEditorHandler);
 
 const EaEditorCollectionProperty = {
     handleAddButton: (addButton, collection) => {
