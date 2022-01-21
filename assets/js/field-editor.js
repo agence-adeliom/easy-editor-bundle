@@ -5,6 +5,9 @@ const eaEditorHandler = function (event) {
     document.querySelectorAll('button.field-editor-add-button:not(.processed)').forEach((addButton) => {
         const collection = addButton.closest('[data-ea-collection-field]');
         addButton.classList.add('processed');
+        if (!collection || collection.classList.contains('processed')) {
+            return;
+        }
         EaEditorCollectionProperty.handleAddButton(addButton, collection);
         EaEditorCollectionProperty.updateCollectionItemCssClasses(collection);
         EaEditorCollectionProperty.updateCollectionSortable(collection);
@@ -92,7 +95,7 @@ const EaEditorCollectionProperty = {
             })
         });
 
-        //collection.classList.add('processed');
+        collection.classList.add('processed');
     },
 
     updateCollectionSortable: (collection) => {
