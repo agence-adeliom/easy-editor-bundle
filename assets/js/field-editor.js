@@ -10,6 +10,10 @@ const eaEditorHandler = function (event) {
         EaEditorCollectionProperty.updateCollectionSortable(collection);
     });
 
+    document.querySelectorAll('button.field-editor-add-button[disabled]').forEach((addButton) => {
+        addButton.disabled = false;
+    });
+
     document.querySelectorAll('button.field-editor-remove-button').forEach((deleteButton) => {
         deleteButton.addEventListener('click', () => {
             const collection = deleteButton.closest('[data-ea-collection-field]');
@@ -44,7 +48,9 @@ document.addEventListener('ea.collection.item-added', eaEditorHandler);
 
 const EaEditorCollectionProperty = {
     handleAddButton: (addButton, collection) => {
-        addButton.addEventListener('click', function() {
+        addButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const isArrayCollection = collection.classList.contains('field-array');
             // Use a counter to avoid having the same index more than once
             let numItems = parseInt(collection.dataset.numItems);
@@ -84,7 +90,6 @@ const EaEditorCollectionProperty = {
                 document.dispatchEvent(new Event('ea.editor.item-added'));
                 document.dispatchEvent(new Event('ea.collection.item-added'));
             })
-
         });
 
         //collection.classList.add('processed');
