@@ -67,6 +67,14 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         ];
     }
 
+    public static function configureAdminAssets(): array
+    {
+        return [
+            'js' => [],
+            'css' => [],
+        ];
+    }
+
     public static function indexableProperties(): array
     {
         return [];

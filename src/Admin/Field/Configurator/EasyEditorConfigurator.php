@@ -8,6 +8,7 @@ use Doctrine\ORM\PersistentCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldConfiguratorInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\AssetDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -54,6 +55,23 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
 
         $blocksCollection = $this->collection->enabledSupportFilter($entityDto);
         $blocks = $blocksCollection->getAllowedBlocks($field->getCustomOptions()->get(EasyEditorField::OPTION_BLOCKS));
+
+        foreach ($blocks as $blockType => $block){
+            if (method_exists($blockType,'configureAdminAssets')){
+                $assets = call_user_func([$blockType,'configureAdminAssets']);
+                if(!empty($assets['js'])){
+                    foreach ($assets['js'] as $file){
+                        $context->getAssets()->addJsAsset(new AssetDto($file));
+                    }
+                }
+                if(!empty($assets['css'])){
+                    foreach ($assets['css'] as $file){
+                        $context->getAssets()->addCssAsset(new AssetDto($file));
+                    }
+                }
+            }
+        }
+
         $field->setFormTypeOption('blocks', $blocks->toArray());
 
         // TODO: check why this label (hidden by default) is not working properly
