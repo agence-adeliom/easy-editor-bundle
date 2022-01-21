@@ -2,10 +2,9 @@ import Sortable from 'sortablejs';
 
 
 const eaEditorHandler = function (event) {
-    document.querySelectorAll('button.field-editor-add-button:not(.processed)').forEach((addButton) => {
+    document.querySelectorAll('button.field-editor-add-button').forEach((addButton) => {
         const collection = addButton.closest('[data-ea-collection-field]');
-        addButton.classList.add('processed');
-        if (!collection || collection.classList.contains('processed')) {
+        if (!collection || addButton.classList.contains('processed')) {
             return;
         }
         EaEditorCollectionProperty.handleAddButton(addButton, collection);
@@ -52,8 +51,6 @@ document.addEventListener('ea.collection.item-added', eaEditorHandler);
 const EaEditorCollectionProperty = {
     handleAddButton: (addButton, collection) => {
         addButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
             const isArrayCollection = collection.classList.contains('field-array');
             // Use a counter to avoid having the same index more than once
             let numItems = parseInt(collection.dataset.numItems);
@@ -95,7 +92,7 @@ const EaEditorCollectionProperty = {
             })
         });
 
-        collection.classList.add('processed');
+        addButton.classList.add('processed');
     },
 
     updateCollectionSortable: (collection) => {
