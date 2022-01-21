@@ -123,7 +123,7 @@ const EaEditorCollectionProperty = {
         const collectionItems = collection.querySelectorAll('.field-collection-item');
         collectionItems.forEach((item, key) => {
             item.querySelectorAll('[name]').forEach((input) => {
-                if(input.name.includes("[position]")){
+                if(input.name && input.name.includes("[position]")){
                     input.value = key
                 }
             })
