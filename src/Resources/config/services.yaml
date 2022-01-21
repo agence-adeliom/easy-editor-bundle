@@ -21,6 +21,8 @@ services:
 
     Adeliom\EasyEditorBundle\Admin\Field\Configurator\EasyEditorConfigurator:
         public: true
+        arguments:
+            - "@easy_editor.block_collection"
 
     Adeliom\EasyEditorBundle\Twig\EasyBlockExtension:
         public: true

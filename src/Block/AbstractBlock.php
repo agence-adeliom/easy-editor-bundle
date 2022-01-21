@@ -71,4 +71,9 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
     {
         return [];
     }
+
+    public function supports(string $objectClass, $instance = null): bool
+    {
+        return true;
+    }
 }

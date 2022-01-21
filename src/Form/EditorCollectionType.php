@@ -89,7 +89,7 @@ class EditorCollectionType extends CollectionType
             'entry_options' => [],
             'delete_empty' => true,
             'by_reference' => false,
-            'blocks' => $this->blockCollection->getBlocks(),
+            'blocks' => $this->blockCollection->getBlocks()->toArray(),
             'invalid_message' => function (Options $options, $previousValue) {
                 return ($options['legacy_error_messages'] ?? true)
                     ? $previousValue

@@ -10,5 +10,5 @@ interface BlockInterface
     public function getIcon(): string;
     public function getTemplate(): string;
     public static function configureAssets(): array;
-
+    public function supports(string $objectClass, $instance = null): bool;
 }

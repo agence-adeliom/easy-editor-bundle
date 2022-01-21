@@ -3,6 +3,7 @@
 namespace Adeliom\EasyEditorBundle\Admin\Field\Configurator;
 
 use Adeliom\EasyEditorBundle\Admin\Field\EasyEditorField;
+use Adeliom\EasyEditorBundle\Block\BlockCollection;
 use Doctrine\ORM\PersistentCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -21,6 +22,14 @@ use function Symfony\Component\String\u;
  */
 final class EasyEditorConfigurator implements FieldConfiguratorInterface
 {
+
+    protected BlockCollection $collection;
+
+    public function __construct(BlockCollection $collection)
+    {
+        $this->collection = $collection;
+    }
+
     public function supports(FieldDto $field, EntityDto $entityDto): bool
     {
         return EasyEditorField::class === $field->getFieldFqcn();
@@ -42,6 +51,10 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
         $field->setFormTypeOption('allow_delete', $field->getCustomOptions()->get(EasyEditorField::OPTION_ALLOW_DELETE));
         $field->setFormTypeOptionIfNotSet('by_reference', false);
         $field->setFormTypeOptionIfNotSet('delete_empty', true);
+
+        $blocksCollection = $this->collection->enabledSupportFilter($entityDto);
+        $blocks = $blocksCollection->getAllowedBlocks($field->getCustomOptions()->get(EasyEditorField::OPTION_BLOCKS));
+        $field->setFormTypeOption('blocks', $blocks->toArray());
 
         // TODO: check why this label (hidden by default) is not working properly
         // (generated values are always the same for all elements)

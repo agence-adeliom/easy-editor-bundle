@@ -20,6 +20,7 @@ class EasyEditorField implements FieldInterface
     public const OPTION_ENTRY_TYPE = 'entryType';
     public const OPTION_SHOW_ENTRY_LABEL = 'showEntryLabel';
     public const OPTION_RENDER_EXPANDED = 'renderExpanded';
+    public const OPTION_BLOCKS = 'blocks';
 
     /**
      * @param string|false|null $label
@@ -86,6 +87,13 @@ class EasyEditorField implements FieldInterface
     public function renderExpanded(bool $renderExpanded = true): self
     {
         $this->setCustomOption(self::OPTION_RENDER_EXPANDED, $renderExpanded);
+
+        return $this;
+    }
+
+    public function allowedBlocks(array $blocks): self
+    {
+        $this->setCustomOption(self::OPTION_BLOCKS, $blocks);
 
         return $this;
     }
