@@ -70,6 +70,13 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
                     }
                 }
             }
+
+            if (method_exists($blockType,'configureAdminFormTheme')){
+                $formThemes = call_user_func([$blockType,'configureAdminFormTheme']);
+                if(!empty($formThemes) && $context->getCrud()){
+                    $context->getCrud()->setFormThemes(array_merge($context->getCrud()->getFormThemes(), $formThemes));
+                }
+            }
         }
 
         $field->setFormTypeOption('blocks', $blocks->toArray());

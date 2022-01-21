@@ -75,6 +75,12 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         ];
     }
 
+    public static function configureAdminFormTheme(): array
+    {
+        return [];
+    }
+
+
     public static function indexableProperties(): array
     {
         return [];
