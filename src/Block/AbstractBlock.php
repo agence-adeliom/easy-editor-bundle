@@ -47,7 +47,7 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $attr["block-title"] = $this->getName();
-        $attr["block-icon"] = $this->getIcon();
+        $attr["block-icon"] = is_iterable($this->getIcon()) ? $this->getIcon()[0] : $this->getIcon();
         $view->vars['attr'] = $attr;
     }
 
