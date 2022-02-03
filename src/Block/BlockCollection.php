@@ -19,6 +19,7 @@ class BlockCollection
         foreach($blocks as $block) {
             $this->blocks[get_class($block)] = $block;
         }
+        uasort($this->blocks, function ($a, $b) { return ($a->getPosition() <=> $b->getPosition()); });
         $this->blocks = new ArrayCollection($this->blocks);
     }
 

@@ -80,10 +80,14 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         return [];
     }
 
-
     public static function indexableProperties(): array
     {
         return [];
+    }
+
+    public function getPosition(): int
+    {
+        return 100;
     }
 
     public function supports(string $objectClass, $instance = null): bool
