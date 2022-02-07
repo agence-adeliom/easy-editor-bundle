@@ -61,12 +61,28 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
                 $assets = call_user_func([$blockType,'configureAdminAssets']);
                 if(!empty($assets['js'])){
                     foreach ($assets['js'] as $file){
-                        $context->getAssets()->addJsAsset(new AssetDto($file));
+                        $found = false;
+                        foreach ($context->getAssets()->getJsAssets() as $assetDto) {
+                            if ($assetDto->getValue() === $file) {
+                                $found = true;
+                            }
+                        }
+                        if (!$found) {
+                            $context->getAssets()->addJsAsset(new AssetDto($file));
+                        }
                     }
                 }
                 if(!empty($assets['css'])){
                     foreach ($assets['css'] as $file){
-                        $context->getAssets()->addCssAsset(new AssetDto($file));
+                        $found = false;
+                        foreach ($context->getAssets()->getCssAssets() as $assetDto) {
+                            if ($assetDto->getValue() === $file) {
+                                $found = true;
+                            }
+                        }
+                        if (!$found) {
+                            $context->getAssets()->addCssAsset(new AssetDto($file));
+                        }
                     }
                 }
             }
