@@ -78,9 +78,15 @@ const EaEditorCollectionProperty = {
                 if (!isArrayCollection) {
                     EaEditorCollectionProperty.updateCollectionItemCssClasses(collection);
                     EaEditorCollectionProperty.updateCollectionSortable(collection);
-
                     const collectionItems = collectionItemsWrapper.querySelectorAll('.field-collection-item');
-                    const lastElement = collectionItems[collectionItems.length - 1];
+                    let formName = this.closest('.ea-edit-form').getAttribute('name');
+                    let lastElement = null;
+                    let collectionItemsLength = collectionItems.length - 1;
+                    do {
+                        lastElement = collectionItems[collectionItemsLength];
+                        collectionItemsLength--;
+                    }
+                    while(lastElement.closest(`[id^="${formName}_content"]`) !== collectionItemsWrapper && collectionItemsLength >= 0);
                     const lastElementCollapseButton = lastElement.querySelector('.accordion-button');
                     lastElementCollapseButton.classList.remove('collapsed');
                     const lastElementBody = lastElement.querySelector('.accordion-collapse');
