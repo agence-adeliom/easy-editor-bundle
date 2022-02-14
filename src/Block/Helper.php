@@ -167,6 +167,16 @@ class Helper
             unset($blockDatas["position"]);
         }
 
+        // Add a way to automatically set an ID (base on loop index when the page is rendered)
+        if (empty($blockDatas['attr_id'])) {
+            global $blockLoopIndex;
+            if (empty($blockLoopIndex)) {
+                $blockLoopIndex = 0;
+            }
+            $blockLoopIndex++;
+            $blockDatas['attr_id'] = 'block-' . $blockLoopIndex;
+        }
+
         $stats["settings"] = $blockDatas;
         $stats["assets"] = $result->getArgument('assets');
 
