@@ -30,9 +30,10 @@ const eaEditorHandler = function (event) {
 
     if (typeof CKEDITOR !== 'undefined' && CKEDITOR && CKEDITOR.instances){
         for (const editorKey in CKEDITOR.instances) {
-            var editor = CKEDITOR.instances[editorKey];
-            editor.mode = 'source';
-            editor.setMode('wysiwyg');
+            const editor = CKEDITOR.instances[editorKey];
+            editor.setMode('wysiwyg', function (){
+                editor.mode = 'source';
+            });
         }
     }
 
