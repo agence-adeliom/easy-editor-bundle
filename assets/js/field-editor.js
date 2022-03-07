@@ -80,7 +80,7 @@ const EaEditorCollectionProperty = {
                     EaEditorCollectionProperty.updateCollectionItemCssClasses(collection);
                     EaEditorCollectionProperty.updateCollectionSortable(collection);
                     const collectionItems = collectionItemsWrapper.querySelectorAll('.field-collection-item');
-                    let formName = this.closest('.ea-edit-form').getAttribute('name');
+                    let formName = this.closest('.ea-edit-form, .ea-new-form').getAttribute('name');
                     let lastElement = null;
                     let collectionItemsLength = collectionItems.length - 1;
                     do {
