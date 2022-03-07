@@ -94,6 +94,13 @@ const EaEditorCollectionProperty = {
                     lastElementBody.classList.add('show');
                 }
 
+
+                Array.from(collectionItemsWrapper.querySelectorAll("script")).forEach( oldScript => {
+                    if(!oldScript.src) {
+                        EaEditorCollectionProperty.evalScript(oldScript.innerHTML)
+                    }
+                });
+
                 document.dispatchEvent(new Event('ea.editor.item-added'));
                 document.dispatchEvent(new Event('ea.collection.item-added'));
             })
@@ -162,6 +169,12 @@ const EaEditorCollectionProperty = {
             document.head.append(link);
         });
     },
+    evalScript(content) {
+        return new Promise(function (resolve, reject) {
+            eval(content);
+            resolve();
+        });
+    },
     loadScript(src) {
         return new Promise(function (resolve, reject) {
             let script = document.createElement('script');
@@ -172,6 +185,7 @@ const EaEditorCollectionProperty = {
             script.onerror = () => reject(new Error(`Style load error for ${src}`));
 
             document.head.append(script);
+            resolve();
         });
     },
     setInnerHTML(elm, html) {
