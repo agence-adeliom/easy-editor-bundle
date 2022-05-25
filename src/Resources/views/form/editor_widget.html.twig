@@ -116,9 +116,6 @@
                                                         data-prototype='{{ form_row(prototypes[type])|e('html_attr') }}'
                                                         data-num-items='{{ form.children|length }}'
                                                         data-form-type-name-placeholder='{{ prototypes[type] is defined ? prototypes[type].vars.name : '' }}'
-                                                        data-form-type-id='{{ id }}'
-                                                        data-form-type-parent-id='{{ form.parent is defined ? form.parent.vars.id : '' }}'
-                                                        data-form-type-parent-name='{{ form.parent is defined ? form.parent.vars.name : '' }}'
                                                 >
                                                     <span>Ajouter</span>
                                                 </button>

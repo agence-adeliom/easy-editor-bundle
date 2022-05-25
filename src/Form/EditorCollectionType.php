@@ -33,8 +33,13 @@ class EditorCollectionType extends CollectionType
             $prototypeOptions['allow_extra_fields'] = true;
 
             $prototypes = [];
+            
             foreach ($options['blocks'] as $type => $block){
-                $form = $builder->create($options['prototype_name'], get_class($block), $prototypeOptions);
+                $name = sprintf('__block_%s__', $block->getBlockPrefix());
+                if(!empty($prototypeOptions['label']) && str_contains("label__", prototypeOptions['label'])){
+                    $prototypeOptions['label'] = $name . 'label__';
+                }
+                $form = $builder->create($name, get_class($block), $prototypeOptions);
                 $prototypes[$type] = $form->getForm();
             }
             $builder->setAttribute('prototypes', $prototypes);
