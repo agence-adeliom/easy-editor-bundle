@@ -21,9 +21,6 @@
   },
   "dependencies": {
     "@editorjs/editorjs": "^2.22.2",
-    "grapesjs": "^0.17.22",
-    "npm": "^7.19.1",
-    "npx": "^10.2.2",
     "sortablejs": "^1.14.0",
     "tailwindcss": "^2.2.4"
   }
