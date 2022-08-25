@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Adeliom\EasyEditorBundle\Block;
-
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
@@ -14,19 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 abstract class AbstractBlock extends AbstractType implements BlockInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $manager;
-
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(protected EntityManagerInterface $manager)
     {
-        $this->manager = $manager;
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
     public function getManager(): EntityManagerInterface
     {
         return $this->manager;
@@ -35,17 +24,18 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add("block_type", HiddenType::class, ["data" => get_class($this)])
+            ->add("block_type", HiddenType::class, ["data" => $this::class])
             ->add("position", HiddenType::class)
         ;
 
         $this->buildBlock($builder, $options);
     }
 
-    public abstract function buildBlock(FormBuilderInterface $builder, array $options): void;
+    abstract public function buildBlock(FormBuilderInterface $builder, array $options): void;
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
+        $attr = [];
         $attr["block-title"] = $this->getName();
         $attr["block-icon"] = is_iterable($this->getIcon()) ? $this->getIcon()[0] : $this->getIcon();
         $view->vars['attr'] = $attr;

@@ -13,13 +13,44 @@ class EasyEditorField implements FieldInterface
 {
     use FieldTrait;
 
+    /**
+     * @var string
+     */
     public const OPTION_ALLOW_DRAG = 'allowDrag';
+
+    /**
+     * @var string
+     */
     public const OPTION_ALLOW_ADD = 'allowAdd';
+
+    /**
+     * @var string
+     */
     public const OPTION_ALLOW_DELETE = 'allowDelete';
+
+    /**
+     * @var string
+     */
     public const OPTION_ENTRY_IS_COMPLEX = 'entryIsComplex';
+
+    /**
+     * @var string
+     */
     public const OPTION_ENTRY_TYPE = 'entryType';
+
+    /**
+     * @var string
+     */
     public const OPTION_SHOW_ENTRY_LABEL = 'showEntryLabel';
+
+    /**
+     * @var string
+     */
     public const OPTION_RENDER_EXPANDED = 'renderExpanded';
+
+    /**
+     * @var string
+     */
     public const OPTION_BLOCKS = 'blocks';
 
     /**
@@ -27,7 +58,7 @@ class EasyEditorField implements FieldInterface
      */
     public static function new(string $propertyName, $label = null): self
     {
-        $field = (new self())
+        return (new self())
             ->setProperty($propertyName)
             ->setLabel($label)
             ->setTemplateName('crud/field/collection')
@@ -41,8 +72,6 @@ class EasyEditorField implements FieldInterface
             ->setCustomOption(self::OPTION_ENTRY_IS_COMPLEX, null)
             ->setCustomOption(self::OPTION_SHOW_ENTRY_LABEL, false)
             ->setCustomOption(self::OPTION_RENDER_EXPANDED, false);
-
-        return $field;
     }
 
     public function allowDrag(bool $allow = true): self

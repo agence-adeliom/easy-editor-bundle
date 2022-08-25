@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\LocaleType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
+
 use function Symfony\Component\String\u;
 
 /**
@@ -23,12 +24,8 @@ use function Symfony\Component\String\u;
  */
 final class EasyEditorConfigurator implements FieldConfiguratorInterface
 {
-
-    protected BlockCollection $collection;
-
-    public function __construct(BlockCollection $collection)
+    public function __construct(protected BlockCollection $collection)
     {
-        $this->collection = $collection;
     }
 
     public function supports(FieldDto $field, EntityDto $entityDto): bool
@@ -56,30 +53,33 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
         $blocksCollection = $this->collection->enabledSupportFilter($entityDto);
         $blocks = $blocksCollection->getAllowedBlocks($field->getCustomOptions()->get(EasyEditorField::OPTION_BLOCKS));
 
-        foreach ($blocks as $blockType => $block){
-            if (method_exists($blockType,'configureAdminAssets')){
+        foreach ($blocks as $blockType => $block) {
+            if (method_exists($blockType, 'configureAdminAssets')) {
                 $assets = call_user_func([$blockType,'configureAdminAssets']);
-                if(!empty($assets['js'])){
-                    foreach ($assets['js'] as $file){
+                if (!empty($assets['js'])) {
+                    foreach ($assets['js'] as $file) {
                         $found = false;
                         foreach ($context->getAssets()->getJsAssets() as $assetDto) {
                             if ($assetDto->getValue() === $file) {
                                 $found = true;
                             }
                         }
+
                         if (!$found) {
                             $context->getAssets()->addJsAsset(new AssetDto($file));
                         }
                     }
                 }
-                if(!empty($assets['css'])){
-                    foreach ($assets['css'] as $file){
+
+                if (!empty($assets['css'])) {
+                    foreach ($assets['css'] as $file) {
                         $found = false;
                         foreach ($context->getAssets()->getCssAssets() as $assetDto) {
                             if ($assetDto->getValue() === $file) {
                                 $found = true;
                             }
                         }
+
                         if (!$found) {
                             $context->getAssets()->addCssAsset(new AssetDto($file));
                         }
@@ -87,9 +87,9 @@ final class EasyEditorConfigurator implements FieldConfiguratorInterface
                 }
             }
 
-            if (method_exists($blockType,'configureAdminFormTheme')){
+            if (method_exists($blockType, 'configureAdminFormTheme')) {
                 $formThemes = call_user_func([$blockType,'configureAdminFormTheme']);
-                if(!empty($formThemes) && $context->getCrud()){
+                if (!empty($formThemes) && $context->getCrud()) {
                     $context->getCrud()->setFormThemes(array_merge($context->getCrud()->getFormThemes(), $formThemes));
                 }
             }

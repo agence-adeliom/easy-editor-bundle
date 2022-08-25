@@ -13,8 +13,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EditorCollectionType extends CollectionType
 {
+    /**
+     * @var \Adeliom\EasyEditorBundle\Block\BlockCollection|mixed
+     */
+    public $blockCollection;
 
-    public function __construct( BlockCollection $blockCollection ) {
+    public function __construct(BlockCollection $blockCollection)
+    {
         $this->blockCollection = $blockCollection;
     }
 
@@ -23,25 +28,28 @@ class EditorCollectionType extends CollectionType
         if ($options['allow_add'] && $options['prototype']) {
             $prototypeOptions = array_replace([
                 'required' => $options['required'],
-                'label' => $options['prototype_name'].'label__',
+                'label' => $options['prototype_name'] . 'label__',
             ], $options['entry_options']);
 
             if (null !== $options['prototype_data']) {
                 $prototypeOptions['data'] = $options['prototype_data'];
             }
+
             $prototypeOptions['compound'] = true;
             $prototypeOptions['allow_extra_fields'] = true;
 
             $prototypes = [];
-            
-            foreach ($options['blocks'] as $type => $block){
+
+            foreach ($options['blocks'] as $type => $block) {
                 $name = sprintf('__block_%s__', $block->getBlockPrefix());
-                if(!empty($prototypeOptions['label']) && str_contains("label__", prototypeOptions['label'])){
+                if (!empty($prototypeOptions['label']) && str_contains("label__", (string) \PROTOTYPEOPTIONS['label'])) {
                     $prototypeOptions['label'] = $name . 'label__';
                 }
-                $form = $builder->create($name, get_class($block), $prototypeOptions);
+
+                $form = $builder->create($name, $block::class, $prototypeOptions);
                 $prototypes[$type] = $form->getForm();
             }
+
             $builder->setAttribute('prototypes', $prototypes);
         }
 
@@ -67,7 +75,7 @@ class EditorCollectionType extends CollectionType
         if ($form->getConfig()->hasAttribute('prototypes')) {
             $prototypes = $form->getConfig()->getAttribute('prototypes');
             $view->vars['prototypes'] = [];
-            foreach ($prototypes as $type => $prototype){
+            foreach ($prototypes as $type => $prototype) {
                 $view->vars['prototypes'][$type] = $prototype->setParent($form)->createView($view);
             }
         }
@@ -75,9 +83,8 @@ class EditorCollectionType extends CollectionType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $entryOptionsNormalizer = function (Options $options, $value) {
+        $entryOptionsNormalizer = static function (Options $options, $value) {
             $value['block_name'] = 'entry';
-
             return $value;
         };
 
@@ -95,11 +102,9 @@ class EditorCollectionType extends CollectionType
             'delete_empty' => true,
             'by_reference' => false,
             'blocks' => $this->blockCollection->getBlocks()->toArray(),
-            'invalid_message' => function (Options $options, $previousValue) {
-                return ($options['legacy_error_messages'] ?? true)
-                    ? $previousValue
-                    : 'The collection is invalid.';
-            },
+            'invalid_message' => static fn(Options $options, $previousValue) => ($options['legacy_error_messages'] ?? true)
+                ? $previousValue
+                : 'The collection is invalid.',
         ]);
 
         $resolver->setNormalizer('entry_options', $entryOptionsNormalizer);
@@ -130,7 +135,7 @@ class EditorCollectionType extends CollectionType
 
         /** @var FormInterface $prototype */
         if ($prototypes = $form->getConfig()->getAttribute('prototypes')) {
-            foreach ($prototypes as $type => $prototype){
+            foreach ($prototypes as $type => $prototype) {
                 if ($view->vars['prototypes'][$type]->vars['multipart']) {
                     $view->vars['multipart'] = true;
                 }
@@ -141,14 +146,12 @@ class EditorCollectionType extends CollectionType
 
                 array_splice($view->vars['prototypes'][$type]->vars['block_prefixes'], $prefixOffset, 0, 'editor_collection_entry');
             }
-
         }
     }
 
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'editor_collection';
     }
-
 }

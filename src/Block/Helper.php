@@ -6,7 +6,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\FormFactory;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
@@ -14,79 +13,56 @@ use Twig\Markup;
 
 class Helper
 {
-
     /**
      * This property is a state variable holdings all assets used by the block for the current PHP request
      * It is used to correctly render the javascripts and stylesheets tags on the main layout.
-     *
-     * @var array
      */
-    private $assets;
+    private array $assets = [
+        'js' => [],
+        'css' => [],
+        'webpack' => [],
+    ];
 
-    /**
-     * @var array
-     */
-    private $traces;
+    private array $traces = [];
 
-    /**
-     * @var BlockCollection
-     */
-    private $collection;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
-     * @var FormFactory
-     */
-    private $formFactory;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    public function __construct(Environment $twig, EventDispatcherInterface $eventDispatcher, BlockCollection $collection, FormFactory  $formFactory, EntityManagerInterface $em)
-    {
-        $this->twig = $twig;
-        $this->collection = $collection;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->formFactory = $formFactory;
-        $this->em = $em;
-
-        $this->assets = [
-            'js' => [],
-            'css' => [],
-            'webpack' => [],
-        ];
-
-        $this->traces = [];
+    public function __construct(
+        /**
+         * @readonly
+         */
+        private Environment $twig,
+        /**
+         * @readonly
+         */
+        private EventDispatcherInterface $eventDispatcher,
+        /**
+         * @readonly
+         */
+        private BlockCollection $collection,
+        /**
+         * @readonly
+         */
+        private FormFactory $formFactory,
+        /**
+         * @readonly
+         */
+        private EntityManagerInterface $em
+    ) {
     }
 
     /**
-     * @return array|string
+     * @return mixed[]|string
      */
-    public function includeAssets()
+    public function includeAssets(): array|string
     {
         $html = '';
 
-        if (!empty($this->assets['css'])) {
-            if (!empty($this->assets['css'])) {
-                $html .= "<style media='all'>";
-
-                foreach ($this->assets['css'] as $stylesheet) {
-                    $html .= "\n" . sprintf('@import url(%s);', $stylesheet);
-                }
-
-                $html .= "\n</style>";
+        if (!empty($this->assets['css']) && !empty($this->assets['css'])) {
+            $html .= "<style media='all'>";
+            foreach ($this->assets['css'] as $stylesheet) {
+                $html .= "\n" . sprintf('@import url(%s);', $stylesheet);
             }
+
+            $html .= "\n</style>";
         }
 
         if (!empty($this->assets['js'])) {
@@ -99,12 +75,13 @@ class Helper
             foreach ($this->assets['webpack'] as $webpack) {
                 try {
                     $html .= "\n" . $this->twig->createTemplate(sprintf("{{ encore_entry_link_tags('%s') }}", $webpack))->render();
-                    $html .= "\n".$this->twig->createTemplate(sprintf("{{ encore_entry_script_tags('%s') }}", $webpack))->render();
-                } catch (LoaderError | SyntaxError $e) {
+                    $html .= "\n" . $this->twig->createTemplate(sprintf("{{ encore_entry_script_tags('%s') }}", $webpack))->render();
+                } catch (LoaderError | SyntaxError) {
                     $html .= "";
                 }
             }
         }
+
         return $html;
     }
 
@@ -121,7 +98,7 @@ class Helper
         return [
             'id' => uniqid(),
             'name' => $block->getName(),
-            'type' => get_class($block),
+            'type' => $block::class,
             'position' => null,
             'datas' => [],
             'assets' => [
@@ -158,11 +135,11 @@ class Helper
         $block = $result->getArgument('block');
         $blockDatas = $result->getArgument('settings');
 
-        if(isset($blockDatas["block_type"])){
+        if (isset($blockDatas["block_type"])) {
             unset($blockDatas["block_type"]);
         }
 
-        if(isset($blockDatas["position"])){
+        if (isset($blockDatas["position"])) {
             $stats["position"] = $blockDatas["position"];
             unset($blockDatas["position"]);
         }
@@ -173,7 +150,8 @@ class Helper
             if (empty($blockLoopIndex)) {
                 $blockLoopIndex = 0;
             }
-            $blockLoopIndex++;
+
+            ++$blockLoopIndex;
             $blockDatas['attr_id'] = 'block-' . $blockLoopIndex;
         }
 
@@ -190,5 +168,4 @@ class Helper
             "settings" => $blockDatas,
         ], $extra)), 'UTF-8');
     }
-
 }
