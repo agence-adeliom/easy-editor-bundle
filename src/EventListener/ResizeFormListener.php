@@ -9,17 +9,21 @@ use Symfony\Component\Form\FormInterface;
 
 class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener
 {
-    private $deleteEmpty;
 
+    protected $type;
+    protected $options;
+    protected $allowAdd;
+    protected $allowDelete;
 
-    /**
-     * @param bool          $allowAdd    Whether children could be added to the group
-     * @param bool          $allowDelete Whether children could be removed from the group
-     * @param bool|callable $deleteEmpty
-     */
-    public function __construct(protected string $type, protected array $options = [], protected bool $allowAdd = false, protected bool $allowDelete = false, $deleteEmpty = false)
+    private \Closure|bool $deleteEmpty;
+
+    public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, bool|callable $deleteEmpty = false)
     {
-        $this->deleteEmpty = $deleteEmpty;
+        $this->type = $type;
+        $this->allowAdd = $allowAdd;
+        $this->allowDelete = $allowDelete;
+        $this->options = $options;
+        $this->deleteEmpty = $deleteEmpty instanceof \Closure || !\is_callable($deleteEmpty) ? $deleteEmpty : \Closure::fromCallable($deleteEmpty);
     }
 
     public static function getSubscribedEvents(): array
