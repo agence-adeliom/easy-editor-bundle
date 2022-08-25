@@ -1,0 +1,193 @@
+{# collection #}
+
+{% block editor_collection_row %}
+    {% set row_attr = row_attr|merge({
+        'data-ea-collection-field': 'true',
+        'data-entry-is-complex': form.vars.ea_crud_form.ea_field and form.vars.ea_crud_form.ea_field.customOptions.get('entryIsComplex') ? 'true' : 'false',
+        'data-allow-add': allow_add ? 'true' : 'false',
+        'data-allow-delete': allow_delete ? 'true' : 'false',
+        'data-num-items': form.children|length,
+    }) %}
+
+    {{ block('form_row') }}
+
+    <script src="{{ asset("bundles/easyadmin/form-type-collection.js") }}"></script>
+{% endblock editor_collection_row %}
+
+{% block editor_collection_entry_row %}
+    <div class="editor-collection_row">
+        {{ block('form_row') }}
+    </div>
+{% endblock editor_collection_entry_row %}
+
+{% block editor_collection_widget %}
+    {# the "is iterable" check is needed because if an object implements __toString() and
+               returns an empty string, "is empty" returns true even if it's not a collection #}
+    {% set isEmptyCollection = value is null or (value is iterable and value is empty) %}
+    {% set is_array_field = 'EasyCorp\\Bundle\\EasyAdminBundle\\Field\\ArrayField' == form.vars.ea_crud_form.ea_field.fieldFqcn ?? false %}
+    <div class="row">
+        <div class="col-8">
+            <div class="ea-form-collection-items editor-collection">
+                {% if isEmptyCollection %}
+                    {{ block('empty_collection') }}
+                {% elseif is_array_field %}
+                    {{ block('form_widget') }}
+                {% else %}
+                    <div class="accordion border-0 shadow-none">
+                        {{ block('form_widget') }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if isEmptyCollection or form.vars.prototype is defined %}
+            {% set attr = attr|merge({'data-empty-collection': block('empty_collection') }) %}
+        {% endif %}
+
+        {% if allow_add|default(false) %}
+            <div class="col-4">
+                <div class="field-editor-blocks">
+                    {% set tabs = [] %}
+                    {% for type, block in blocks %}
+                        {% set tab = 'Autre' %}
+                        {% if block.getTab() is defined %}
+                            {% set tab = block.getTab() %}
+                        {% endif %}
+                        {% if tab not in tabs %}
+                            {% set tabs = tabs|merge([tab]) %}
+                        {% endif %}
+                    {% endfor %}
+                    <ul class="nav nav-tabs" id="flex-tabs" role="tablist">
+                        {% for tab in tabs %}
+                            {% set tabKey = tab|replace({" ":"_"})|lower %}
+                            <li class="nav-item" role="presentation">
+                                <a style="cursor:pointer;" class="nav-link {{ loop.index == 1 ? 'active' : '' }}" id="nav-{{ tabKey }}-tab" data-bs-toggle="tab" data-bs-target="#nav-{{ tabKey }}" role="tab" aria-controls="nav-{{ tabKey }}" aria-selected="{{ loop.index == 1 ? 'true' : 'false' }}">
+                                    {{ tab }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% set blockCount = 0 %}
+                    <div class="tab-content" id="flex-tabs-content">
+                        {% for tab in tabs %}
+                            {% set tabKey = tab|replace({" ":"_"})|lower %}
+                            <div class="tab-pane {{ loop.index == 1 ? ' active' : '' }}" id="nav-{{ tabKey }}" role="tabpanel" aria-labelledby="nav-{{ tabKey }}-tab">
+                                {% for type, block in blocks %}
+                                    {% set blockTab = 'Autre' %}
+                                    {% if block.getTab is defined %}
+                                        {% set blockTab = block.getTab() %}
+                                    {% endif %}
+                                    {% if blockTab == tab %}
+                                        {% set blockCount = blockCount + 1 %}
+                                        <div class="card">
+                                            <h5 class="card-header">{{ block.name }}</h5>
+                                            {% if block.icon is iterable %}
+                                                <div id="carouselBlockControlsNoTouching{{ blockCount }}" class="carousel carousel-dark slide"  data-bs-ride="carousel">
+                                                    <div class="carousel-indicators">
+                                                        {% for icon in block.icon %}
+                                                            <button type="button" data-bs-target="#carouselBlockControlsNoTouching{{ blockCount }}"  {{ loop.first ? ' class="active" aria-current="true" ' : '' }} data-bs-slide-to="{{ loop.index0 }}"></button>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="carousel-inner">
+                                                        {% for icon in block.icon %}
+                                                            <div class="carousel-item {{ loop.first ? 'active' : '' }}" data-bs-interval="10000">
+                                                                {{ icon | raw }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselBlockControlsNoTouching{{ blockCount }}" data-bs-slide="prev">
+                                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Previous</span>
+                                                    </button>
+                                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselBlockControlsNoTouching{{ blockCount }}" data-bs-slide="next">
+                                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                        <span class="visually-hidden">Next</span>
+                                                    </button>
+                                                </div>
+                                            {% else %}
+                                                {{ block.icon|raw }}
+                                            {% endif %}
+                                            <div class="card-body">
+                                                {#                                <h5 class="card-title">Special title treatment</h5>#}
+                                                {#                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>#}
+                                                <button type="button" class="btn btn-primary field-editor-add-button field-editor-choose-button"
+                                                        data-block-type="{{ type }}"
+                                                        data-block-icon="{{ block.icon is not iterable ? block.icon : '' }}"
+                                                        data-block-name="{{ block.name }}"
+                                                        data-prototype='{{ form_row(prototypes[type])|e('html_attr') }}'
+                                                        data-num-items='{{ form.children|length }}'
+                                                        data-form-type-name-placeholder='{{ prototypes[type] is defined ? prototypes[type].vars.name : '' }}'
+                                                >
+                                                    <span>Ajouter</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <br />
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock editor_collection_widget %}
+
+{% block editor_collection_entry_widget %}
+
+    {% set is_array_field = 'EasyCorp\\Bundle\\EasyAdminBundle\\Field\\ArrayField' == form_parent(form).vars.ea_crud_form.ea_field.fieldFqcn ?? false %}
+    {% set is_complex = form_parent(form).vars.ea_crud_form.ea_field.customOptions.get('entryIsComplex') ?? false %}
+    {% set allows_deleting_items = form_parent(form).vars.allow_delete|default(false) %}
+    {% set allows_drag_items = form_parent(form).vars.allow_drag|default(false) %}
+    {% set render_expanded = form_parent(form).vars.ea_crud_form.ea_field.customOptions.get('renderExpanded') ?? false %}
+    {% set error = false %}
+
+    {% if form.vars.errors.form.getErrors(true)|length %}
+        {% set render_expanded = true %}
+        {% set error = true %}
+    {% endif %}
+    {% set delete_item_button %}
+        <button type="button" class="btn btn-link btn-link-danger field-editor-remove-button"
+                title="{{ 'action.remove_item'|trans({}, 'EasyAdminBundle') }}">
+            <i class="far fa-trash-alt"></i>
+        </button>
+    {% endset %}
+
+    {% set drag_item_button %}
+        <button type="button" class="btn btn-link btn-link-secondary field-editor-drag-button" style="cursor:move;"
+                title="{{ 'action.drag_item'|trans({}, 'EasyAdminBundle') }}">
+            <i class="fas fa-arrows-alt-v"></i>
+        </button>
+    {% endset %}
+
+    {% set editorId = 'editorjs_' ~ id %}
+
+    <div class="field-collection-item {{ is_complex ? 'field-collection-item-complex' }} bg-white border rounded mb-1 {{ error ? "border-danger"}} " >
+        <input type="hidden" data-editorjs="{{ editorId }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value|json_encode }}" {% endif %}>
+
+        <div class="accordion-item" style="border-radius: 0; box-shadow: none">
+            <h2 class="accordion-header d-flex p-0 rounded-none" style="--border-radius: 0; box-shadow: none">
+                <button class="accordion-button {{ render_expanded ? '' : 'collapsed' }}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ id }}-contents">
+                    <i class="fas fw fa-chevron-right form-collection-item-collapse-marker"></i>
+                    <span class="accordion-title d-inline-flex">
+                        <span style="width: 1.6rem; margin-right: 5px;">{{ form.vars.attr["block-icon"]|raw }}</span> {{ form.vars.attr["block-title"] }}
+                    </span>
+                </button>
+                <div class="accordion-actions d-flex">
+                    {% if allows_deleting_items %}
+                        {{ delete_item_button }}
+                    {% endif %}
+                    {% if allows_drag_items %}
+                        {{ drag_item_button }}
+                    {% endif %}
+                </div>
+            </h2>
+            <div id="{{ id }}-contents" class="accordion-collapse collapse {{ render_expanded ? 'show' }} border-top">
+                <div class="accordion-body">
+                    {{ form_widget(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock editor_collection_entry_widget %}

@@ -1,0 +1,63 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    _instanceof:
+        Adeliom\EasyEditorBundle\Block\BlockInterface:
+            tags: [ 'easy_editor.block' ]
+
+    Adeliom\EasyEditorBundle\Block\BlockCollection:
+        autoconfigure: true
+        public: true
+        arguments:
+            - !tagged easy_editor.block
+
+    easy_editor.block_collection:
+        alias: Adeliom\EasyEditorBundle\Block\BlockCollection
+
+    Adeliom\EasyEditorBundle\Form\EditorCollectionType:
+        public: true
+
+    Adeliom\EasyEditorBundle\Admin\Field\Configurator\EasyEditorConfigurator:
+        public: true
+        arguments:
+            - "@easy_editor.block_collection"
+
+    Adeliom\EasyEditorBundle\Twig\EasyBlockExtension:
+        public: true
+        tags:
+            - { name: twig.extension }
+
+    easy_editor.twig_extension:
+        alias: Adeliom\EasyEditorBundle\Twig\EasyBlockExtension
+
+    Adeliom\EasyEditorBundle\Block\Helper:
+        public: true
+        arguments:
+            - '@twig'
+            - '@event_dispatcher'
+            - '@easy_editor.block_collection'
+            - '@form.factory'
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: twig.runtime }
+
+    easy_editor.block_helper:
+        alias: Adeliom\EasyEditorBundle\Block\Helper
+
+    easy_editor.maker.make_block:
+        class: Adeliom\EasyEditorBundle\Maker\MakeBlock
+        public: false
+        arguments:
+            - '@maker.file_manager'
+        tags:
+            - { name: maker.command }
+
+    Adeliom\EasyEditorBundle\DataCollector\EditorCollector:
+        arguments:
+            - "@easy_editor.block_helper"
+        tags:
+            - name: data_collector
+              template: '@EasyEditor/profiler/collector.html.twig'
+              id: Adeliom\EasyEditorBundle\DataCollector\EditorCollector
