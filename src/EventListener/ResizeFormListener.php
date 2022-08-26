@@ -2,7 +2,6 @@
 
 namespace Adeliom\EasyEditorBundle\EventListener;
 
-
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -15,23 +14,18 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
     protected $allowAdd;
     protected $allowDelete;
 
-    private $deleteEmpty;
+    private \Closure|bool $deleteEmpty;
 
-    /**
-     * @param bool          $allowAdd    Whether children could be added to the group
-     * @param bool          $allowDelete Whether children could be removed from the group
-     * @param bool|callable $deleteEmpty
-     */
-    public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, $deleteEmpty = false)
+    public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, bool|callable $deleteEmpty = false)
     {
         $this->type = $type;
         $this->allowAdd = $allowAdd;
         $this->allowDelete = $allowDelete;
         $this->options = $options;
-        $this->deleteEmpty = $deleteEmpty;
+        $this->deleteEmpty = $deleteEmpty instanceof \Closure || !\is_callable($deleteEmpty) ? $deleteEmpty : \Closure::fromCallable($deleteEmpty);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             FormEvents::PRE_SET_DATA => 'preSetData',
@@ -61,9 +55,9 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
 
         // Then add all rows again in the correct order
         foreach ($data as $name => $value) {
-            if (!empty($value["block_type"])) {
-                $form->add($name, $value["block_type"], array_replace([
-                    'property_path' => '[' . $name . ']',
+            if (!empty($value['block_type'])) {
+                $form->add($name, $value['block_type'], array_replace([
+                    'property_path' => '['.$name.']',
                 ], $this->options));
             }
         }
@@ -91,7 +85,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         if ($this->allowAdd) {
             foreach ($data as $name => $value) {
                 if (!$form->has($name)) {
-                    $form->add($name, $value["block_type"], array_replace([
+                    $form->add($name, $value['block_type'], array_replace([
                         'property_path' => '['.$name.']',
                     ], $this->options));
                 }
@@ -152,7 +146,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
             }
         }
 
-        usort($data, function($a, $b) { return $a['position'] <=> $b['position']; });
+        usort($data, static fn ($a, $b) => $a['position'] <=> $b['position']);
 
         $event->setData($data);
     }

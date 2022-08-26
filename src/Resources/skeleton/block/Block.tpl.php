@@ -1,11 +1,11 @@
-<?= "<?php\n" ?>
+<?php echo "<?php\n"; ?>
 
-namespace <?= $namespace; ?>;
+namespace <?php echo $namespace; ?>;
 
 use Adeliom\EasyEditorBundle\Block\AbstractBlock;
 use Symfony\Component\Form\FormBuilderInterface;
 
-class <?= $class_name; ?> extends AbstractBlock<?= "\n" ?>
+class <?php echo $class_name; ?> extends AbstractBlock<?php echo "\n"; ?>
 {
     public function buildBlock(FormBuilderInterface $builder, array $options): void
     {
@@ -14,7 +14,7 @@ class <?= $class_name; ?> extends AbstractBlock<?= "\n" ?>
 
     public function getName(): string
     {
-        return '<?= $class_name; ?>';
+        return '<?php echo $class_name; ?>';
     }
 
     public function getIcon(): string
@@ -24,6 +24,6 @@ class <?= $class_name; ?> extends AbstractBlock<?= "\n" ?>
 
     public function getTemplate(): string
     {
-        return "<?= $template_name ?>";
+        return "<?php echo $template_name; ?>";
     }
 }

@@ -9,19 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EditorCollector extends AbstractDataCollector
 {
-    /**
-     * @var Helper
-     */
-    protected $blockHelper;
-
-    public function __construct(Helper $blockHelper)
+    public function __construct(protected Helper $blockHelper)
     {
-        $this->blockHelper = $blockHelper;
     }
 
     public function collect(Request $request, Response $response, \Throwable $exception = null): void
     {
-        $this->data["blocks"] = $this->blockHelper->getTraces();
+        $this->data['blocks'] = $this->blockHelper->getTraces();
     }
 
     /**
