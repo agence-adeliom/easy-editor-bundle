@@ -7,6 +7,7 @@ require('laravel-mix-polyfill');
 
 mix.setPublicPath("src/Resources/public");
 mix.js('assets/js/field-editor.js', '');
+mix.sass('assets/scss/easy-editor.scss', '');
 
 mix.polyfill();
 

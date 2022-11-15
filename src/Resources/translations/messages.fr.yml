@@ -1,0 +1,6 @@
+easy:
+  editor:
+    add: "Ajouter"
+    next: "Suivant"
+    previous: "Précédent"
+    blocks: "Blocs"
