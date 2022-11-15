@@ -1,0 +1,21 @@
+.ea-dark-scheme {
+  .field-editor-blocks .card {
+      --bs-bg-opacity: 1;
+      background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
+  }
+  .editor-collection {
+      .field-collection-item {
+          --bs-bg-opacity: 1;
+          background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity))!important;
+          border: 1px solid var(--border-secondary-color)!important;
+      }
+  }
+}
+.ea-light-scheme {
+    .editor-collection {
+        .field-collection-item {
+            --bs-bg-opacity: 1;
+            background-color: rgba(var(--bs-white-rgb),var(--bs-bg-opacity))!important;
+        }
+    }
+}

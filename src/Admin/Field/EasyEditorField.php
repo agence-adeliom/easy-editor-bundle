@@ -3,6 +3,7 @@
 namespace Adeliom\EasyEditorBundle\Admin\Field;
 
 use Adeliom\EasyEditorBundle\Form\EditorCollectionType;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FieldTrait;
 
@@ -65,6 +66,7 @@ class EasyEditorField implements FieldInterface
             ->setFormType(EditorCollectionType::class)
             ->addCssClass('field-collection field-collection_sortable')
             ->addJsFiles('bundles/easyeditor/field-editor.js')
+            ->addCssFiles(Asset::new('bundles/easyeditor/easy-editor.css')->onlyOnForms())
             ->setDefaultColumns('col-12')
             ->setCustomOption(self::OPTION_ALLOW_DRAG, true)
             ->setCustomOption(self::OPTION_ALLOW_ADD, true)
