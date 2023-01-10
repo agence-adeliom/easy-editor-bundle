@@ -11,7 +11,7 @@
 
     {{ block('form_row') }}
 
-    <script src="{{ asset("bundles/easyadmin/form-type-collection.js") }}"></script>
+    <script src="{{ asset("bundles/easyfields/form-type-collection.js") }}"></script>
 {% endblock editor_collection_row %}
 
 {% block editor_collection_entry_row %}
@@ -80,7 +80,7 @@
                                         {% set blockCount = blockCount + 1 %}
                                         <div class="card">
                                             <h5 class="card-header">
-                                                {% if block.icon is not iterable and block.icon starts with '<' %}
+                                                {% if block.icon is not iterable and (block.icon starts with '<span' or block.icon starts with '<i' or block.icon starts with '<svg') %}
                                                     {{ block.icon|raw }}
                                                 {% endif %}
                                                 {{ block.name }}
@@ -108,7 +108,7 @@
                                                         <span class="visually-hidden">{{ "easy.editor.next" | trans }}</span>
                                                     </button>
                                                 </div>
-                                            {% elseif not block.icon starts with '<' %}
+                                            {% elseif block.icon starts with '<img' %}
                                                 {{ block.icon|raw }}
                                             {% endif %}
                                             <div class="card-body">
