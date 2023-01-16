@@ -31,9 +31,12 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         $this->buildBlock($builder, $options);
     }
 
+    /**
+     * @param array<string, mixed> $options
+     */
     abstract public function buildBlock(FormBuilderInterface $builder, array $options): void;
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $attr = [];
         $attr['block-title'] = $this->getName();
@@ -41,13 +44,16 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         $view->vars['attr'] = $attr;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'cascade_validation' => true,
         ]);
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public static function configureAssets(): array
     {
         return [
@@ -57,6 +63,9 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         ];
     }
 
+    /**
+     * @return array<string, string[]>
+     */
     public static function configureAdminAssets(): array
     {
         return [
@@ -65,11 +74,17 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
         ];
     }
 
+    /**
+     * @return string[]
+     */
     public static function configureAdminFormTheme(): array
     {
         return [];
     }
 
+    /**
+     * @return string[]
+     */
     public static function indexableProperties(): array
     {
         return [];

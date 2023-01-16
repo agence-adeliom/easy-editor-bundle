@@ -15,11 +15,25 @@ interface BlockInterface
 
     public function getTemplate(): string;
 
+    /**
+     * @return array<string, string[]>
+     */
     public static function configureAssets(): array;
 
+    /**
+     * @return array<string, string[]>
+     */
     public static function configureAdminAssets(): array;
 
+    /**
+     * @return string[]
+     */
     public static function configureAdminFormTheme(): array;
 
-    public function supports(string $objectClass, $instance = null): bool;
+    /**
+     * @return string[]
+     */
+    public static function indexableProperties(): array;
+
+    public function supports(string $objectClass, ?object $instance = null): bool;
 }
