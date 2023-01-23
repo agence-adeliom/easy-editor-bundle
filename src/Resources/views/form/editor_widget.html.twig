@@ -80,7 +80,7 @@
                                         {% set blockCount = blockCount + 1 %}
                                         <div class="card">
                                             <h5 class="card-header">
-                                                {% if block.icon is not iterable and (block.icon starts with '<span' or block.icon starts with '<i' or block.icon starts with '<svg') %}
+                                                {% if block.icon is not iterable and (block.icon starts with '<span' or block.icon starts with '<i ' or block.icon starts with '<svg') %}
                                                     {{ block.icon|raw }}
                                                 {% endif %}
                                                 {{ block.name }}
