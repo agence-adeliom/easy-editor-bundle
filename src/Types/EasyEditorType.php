@@ -2,6 +2,7 @@
 
 namespace Adeliom\EasyEditorBundle\Types;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\JsonType;
 
 class EasyEditorType extends JsonType
@@ -11,10 +12,9 @@ class EasyEditorType extends JsonType
      */
     public const EASYEDITORTYPE = 'easy_editor_type';
 
-    // modify to match your type name
-
-    public function getName()
+    public function getName(): string
     {
         return self::EASYEDITORTYPE; // modify to match your constant name
     }
+
 }
