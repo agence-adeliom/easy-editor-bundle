@@ -64,7 +64,7 @@ class EditorCollectionType extends CollectionType
         $builder->addEventSubscriber($resizeListener);
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars = array_replace($view->vars, [
             'allow_drag' => $options['allow_drag'],
@@ -117,7 +117,7 @@ class EditorCollectionType extends CollectionType
     /**
      * {@inheritdoc}
      */
-    public function finishView(FormView $view, FormInterface $form, array $options)
+    public function finishView(FormView $view, FormInterface $form, array $options): void
     {
         $prefixOffset = -2;
         // check if the entry type also defines a block prefix
