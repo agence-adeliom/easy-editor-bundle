@@ -26,26 +26,11 @@ class Helper
     private array $traces = [];
 
     public function __construct(
-        /**
-         * @readonly
-         */
-        private Environment $twig,
-        /**
-         * @readonly
-         */
-        private EventDispatcherInterface $eventDispatcher,
-        /**
-         * @readonly
-         */
-        private BlockCollection $collection,
-        /**
-         * @readonly
-         */
-        private FormFactory $formFactory,
-        /**
-         * @readonly
-         */
-        private EntityManagerInterface $em
+        private readonly Environment $twig,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly BlockCollection $collection,
+        private readonly FormFactory $formFactory,
+        private readonly EntityManagerInterface $em
     ) {
     }
 

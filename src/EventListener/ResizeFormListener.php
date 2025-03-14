@@ -10,11 +10,14 @@ use Symfony\Component\Form\FormInterface;
 class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener
 {
     protected $type;
+
     protected $options;
+
     protected $allowAdd;
+
     protected $allowDelete;
 
-    private \Closure|bool $deleteEmpty;
+    private readonly \Closure|bool $deleteEmpty;
 
     public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, bool|callable $deleteEmpty = false)
     {

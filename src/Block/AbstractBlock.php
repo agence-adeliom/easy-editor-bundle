@@ -24,7 +24,7 @@ abstract class AbstractBlock extends AbstractType implements BlockInterface
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('block_type', HiddenType::class, ['data' => $this::class])
+            ->add('block_type', HiddenType::class, ['data' => static::class])
             ->add('position', HiddenType::class)
         ;
 

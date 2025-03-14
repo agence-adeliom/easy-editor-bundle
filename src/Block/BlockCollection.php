@@ -44,7 +44,7 @@ class BlockCollection
     {
         $blocks = $this->getBlocks();
 
-        if (empty($blockTypes)) {
+        if ($blockTypes === null || $blockTypes === []) {
             return $blocks;
         }
 
@@ -53,7 +53,7 @@ class BlockCollection
 
     private function filterSupportedBlocks(): void
     {
-        if (null !== $this->entityDto) {
+        if ($this->entityDto instanceof \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto) {
             $this->blocks = $this->blocks->filter(fn (BlockInterface $block, $type) => $block->supports($this->entityDto->getFqcn(), $this->entityDto->getInstance()));
         }
     }
