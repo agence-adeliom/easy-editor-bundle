@@ -7,8 +7,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 
 class BlockCollection
 {
-    /** @var BlockInterface[] */
-    protected $blocks = [];
+    /** @var ArrayCollection<BlockInterface>|array */
+    protected array|ArrayCollection $blocks = [];
 
     protected ?EntityDto $entityDto = null;
 
@@ -22,7 +22,7 @@ class BlockCollection
         $this->blocks = new ArrayCollection($this->blocks);
     }
 
-    public function enabledSupportFilter(EntityDto $entityDto)
+    public function enabledSupportFilter(EntityDto $entityDto): static
     {
         $this->entityDto = $entityDto;
         $this->filterSupportedBlocks();
@@ -30,17 +30,16 @@ class BlockCollection
         return $this;
     }
 
-    public function getBlocks()
+    /** @return ArrayCollection<BlockInterface>|array */
+    public function getBlocks(): ArrayCollection|array
     {
         return $this->blocks;
     }
 
     /**
-     * @param array $blockTypes
-     *
-     * @return array
+     * @param array<string> $blockTypes
      */
-    public function getAllowedBlocks(?array $blockTypes)
+    public function getAllowedBlocks(?array $blockTypes): ArrayCollection|array
     {
         $blocks = $this->getBlocks();
 

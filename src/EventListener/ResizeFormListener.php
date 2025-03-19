@@ -9,23 +9,23 @@ use Symfony\Component\Form\FormInterface;
 
 class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener
 {
-    protected $type;
+    protected array $prototypeOptions;
 
-    protected $options;
+    private \Closure|bool $deleteEmpty;
 
-    protected $allowAdd;
+    public function __construct(
+        private string $type,
+        private array $options = [],
+        private bool $allowAdd = false,
+        private bool $allowDelete = false,
+        bool|callable $deleteEmpty = false,
+        ?array $prototypeOptions = null,
+        private bool $keepAsList = false,
+    ) {
+        $this->deleteEmpty = \is_bool($deleteEmpty) ? $deleteEmpty : $deleteEmpty(...);
+        $this->prototypeOptions = $prototypeOptions ?? $options;
 
-    protected $allowDelete;
-
-    private readonly \Closure|bool $deleteEmpty;
-
-    public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, bool|callable $deleteEmpty = false)
-    {
-        $this->type = $type;
-        $this->allowAdd = $allowAdd;
-        $this->allowDelete = $allowDelete;
-        $this->options = $options;
-        $this->deleteEmpty = $deleteEmpty instanceof \Closure || !\is_callable($deleteEmpty) ? $deleteEmpty : \Closure::fromCallable($deleteEmpty);
+        parent::__construct($this->type, $this->options, $this->allowAdd, $this->allowDelete, $this->deleteEmpty, $this->prototypeOptions, $this->keepAsList);
     }
 
     public static function getSubscribedEvents(): array
@@ -38,7 +38,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         ];
     }
 
-    public function preSetData(FormEvent $event)
+    public function preSetData(FormEvent $event): void
     {
         $form = $event->getForm();
         $data = $event->getData();
@@ -60,13 +60,13 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         foreach ($data as $name => $value) {
             if (!empty($value['block_type'])) {
                 $form->add($name, $value['block_type'], array_replace([
-                    'property_path' => '['.$name.']',
+                    'property_path' => '[' . $name . ']',
                 ], $this->options));
             }
         }
     }
 
-    public function preSubmit(FormEvent $event)
+    public function preSubmit(FormEvent $event): void
     {
         $form = $event->getForm();
         $data = $event->getData();
@@ -89,14 +89,14 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
             foreach ($data as $name => $value) {
                 if (!$form->has($name)) {
                     $form->add($name, $value['block_type'], array_replace([
-                        'property_path' => '['.$name.']',
+                        'property_path' => '[' . $name . ']',
                     ], $this->options));
                 }
             }
         }
     }
 
-    public function onSubmit(FormEvent $event)
+    public function onSubmit(FormEvent $event): void
     {
         $form = $event->getForm();
         $data = $event->getData();
