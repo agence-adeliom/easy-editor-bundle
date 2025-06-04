@@ -54,10 +54,7 @@ class EasyEditorField implements FieldInterface
      */
     public const OPTION_BLOCKS = 'blocks';
 
-    /**
-     * @param string|false|null $label
-     */
-    public static function new(string $propertyName, $label = null): self
+    public static function new(string $propertyName, ?string $label = null): self
     {
         return (new self())
             ->setProperty($propertyName)
