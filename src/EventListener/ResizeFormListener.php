@@ -14,13 +14,13 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
     private \Closure|bool $deleteEmpty;
 
     public function __construct(
-        private string $type,
-        private array $options = [],
-        private bool $allowAdd = false,
-        private bool $allowDelete = false,
+        protected string $type,
+        protected array $options = [],
+        protected bool $allowAdd = false,
+        protected bool $allowDelete = false,
         bool|callable $deleteEmpty = false,
         ?array $prototypeOptions = null,
-        private bool $keepAsList = false,
+        protected bool $keepAsList = false,
     ) {
         $this->deleteEmpty = \is_bool($deleteEmpty) ? $deleteEmpty : $deleteEmpty(...);
         $this->prototypeOptions = $prototypeOptions ?? $options;
