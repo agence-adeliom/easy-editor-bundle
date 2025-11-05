@@ -118,5 +118,6 @@ $dispatcher->addListener('easy_editor.render_block', function (Event $event) {
 ## Authors
 
 - [@arnaud-ritti](https://github.com/arnaud-ritti)
+- [@jeandaviddaviet](https://github.com/JeanDavidDaviet)
 
 
