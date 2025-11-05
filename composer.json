@@ -32,8 +32,8 @@
         "symfony/options-resolver": "^6.4 || ^7.0",
         "symfony/property-access": "^6.4 || ^7.0",
         "easycorp/easyadmin-bundle": "^3.4 || ^v4.0",
-        "agence-adeliom/easy-common-bundle": "^3.1",
-        "agence-adeliom/easy-fields-bundle": "^3.1"
+        "agence-adeliom/easy-common-bundle": "^3.0.1",
+        "agence-adeliom/easy-fields-bundle": "^3.0.1"
     },
     "autoload": {
         "psr-4": {
