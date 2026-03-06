@@ -3,8 +3,8 @@
 namespace Adeliom\EasyEditorBundle\Block;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Adeliom\EasyEditorBundle\Event\RenderBlockEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\Form\FormFactory;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -111,14 +111,10 @@ class Helper
 
         $blockSettings = $datas;
 
-        $event = new GenericEvent(null, ['settings' => $blockSettings, 'block' => $block, 'assets' => $defaultAssets]);
-        /**
-         * @var GenericEvent $result;
-         */
-        $result = $this->eventDispatcher->dispatch($event, 'easy_editor.render_block');
+        $result = $this->eventDispatcher->dispatch(new RenderBlockEvent($block, $blockSettings, $defaultAssets));
 
-        $block = $result->getArgument('block');
-        $blockDatas = $result->getArgument('settings');
+        $block = $result->getBlock();
+        $blockDatas = $result->getSettings();
 
         if (isset($blockDatas['block_type'])) {
             unset($blockDatas['block_type']);
@@ -141,7 +137,7 @@ class Helper
         }
 
         $stats['settings'] = $blockDatas;
-        $stats['assets'] = $result->getArgument('assets');
+        $stats['assets'] = $result->getAssets();
 
         $this->assets = array_merge_recursive($this->assets, $stats['assets']);
 

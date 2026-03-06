@@ -36,13 +36,11 @@ class EditorCollectionType extends CollectionType
             }
 
             $prototypeOptions['compound'] = true;
-            $prototypeOptions['allow_extra_fields'] = true;
-
             $prototypes = [];
 
             foreach ($options['blocks'] as $type => $block) {
                 $name = sprintf('__block_%s__', $block->getBlockPrefix());
-                if (!empty($prototypeOptions['label']) && str_contains('label__', (string) \PROTOTYPEOPTIONS['label'])) {
+                if (!empty($prototypeOptions['label']) && str_contains((string) $prototypeOptions['label'], 'label__')) {
                     $prototypeOptions['label'] = $name.'label__';
                 }
 
