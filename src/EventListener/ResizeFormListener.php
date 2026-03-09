@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Adeliom\EasyEditorBundle\EventListener;
 
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
@@ -9,23 +11,33 @@ use Symfony\Component\Form\FormInterface;
 
 class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventListener\ResizeFormListener
 {
-    protected array $prototypeOptions;
+    private string $entryType;
+
+    private array $entryOptions;
+
+    private bool $entryAllowAdd;
+
+    private bool $entryAllowDelete;
 
     private \Closure|bool $deleteEmpty;
 
     public function __construct(
-        protected string $type,
-        protected array $options = [],
-        protected bool $allowAdd = false,
-        protected bool $allowDelete = false,
+        string $type,
+        array $options = [],
+        bool $allowAdd = false,
+        bool $allowDelete = false,
         bool|callable $deleteEmpty = false,
         ?array $prototypeOptions = null,
-        protected bool $keepAsList = false,
+        bool $keepAsList = false,
     ) {
+        $this->entryType = $type;
+        $this->entryOptions = $options;
+        $this->entryAllowAdd = $allowAdd;
+        $this->entryAllowDelete = $allowDelete;
         $this->deleteEmpty = \is_bool($deleteEmpty) ? $deleteEmpty : $deleteEmpty(...);
         $this->prototypeOptions = $prototypeOptions ?? $options;
 
-        parent::__construct($this->type, $this->options, $this->allowAdd, $this->allowDelete, $this->deleteEmpty, $this->prototypeOptions, $this->keepAsList);
+        parent::__construct($type, $options, $allowAdd, $allowDelete, $this->deleteEmpty, $this->prototypeOptions, $keepAsList);
     }
 
     public static function getSubscribedEvents(): array
@@ -59,9 +71,11 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         // Then add all rows again in the correct order
         foreach ($data as $name => $value) {
             if (!empty($value['block_type'])) {
-                $form->add($name, $value['block_type'], array_replace([
-                    'property_path' => '[' . $name . ']',
-                ], $this->options));
+                $entryName = (string) $name;
+
+                $form->add($entryName, $value['block_type'], array_replace([
+                    'property_path' => '[' . $entryName . ']',
+                ], $this->entryOptions));
             }
         }
     }
@@ -76,7 +90,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         }
 
         // Remove all empty rows
-        if ($this->allowDelete) {
+        if ($this->entryAllowDelete) {
             foreach ($form as $name => $child) {
                 if (!isset($data[$name])) {
                     $form->remove($name);
@@ -85,12 +99,14 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
         }
 
         // Add all additional rows
-        if ($this->allowAdd) {
+        if ($this->entryAllowAdd) {
             foreach ($data as $name => $value) {
-                if (!$form->has($name)) {
-                    $form->add($name, $value['block_type'], array_replace([
-                        'property_path' => '[' . $name . ']',
-                    ], $this->options));
+                $entryName = (string) $name;
+
+                if (!$form->has($entryName) && !empty($value['block_type'])) {
+                    $form->add($entryName, $value['block_type'], array_replace([
+                        'property_path' => '[' . $entryName . ']',
+                    ], $this->entryOptions));
                 }
             }
         }
@@ -126,7 +142,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
 
                 // $isNew can only be true if allowAdd is true, so we don't
                 // need to check allowAdd again
-                if ($isEmpty && ($isNew || $this->allowDelete)) {
+                if ($isEmpty && ($isNew || $this->entryAllowDelete)) {
                     unset($data[$name]);
                     $form->remove($name);
                 }
@@ -135,7 +151,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
 
         // The data mapper only adds, but does not remove items, so do this
         // here
-        if ($this->allowDelete) {
+        if ($this->entryAllowDelete) {
             $toDelete = [];
 
             foreach ($data as $name => $child) {
