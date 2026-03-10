@@ -11,6 +11,8 @@ use Adeliom\EasyEditorBundle\Event\RenderBlockEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
@@ -98,19 +100,14 @@ final class HelperTest extends TestCase
             }))
             ->willReturn('<section>Hero</section>');
 
-        $dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $dispatcher->expects(self::once())
-            ->method('dispatch')
-            ->with(self::isInstanceOf(RenderBlockEvent::class))
-            ->willReturnCallback(static function (RenderBlockEvent $event): RenderBlockEvent {
-                $event->setAssets([
-                    'js' => ['/hero.js'],
-                    'css' => ['/hero.css'],
-                    'webpack' => [],
-                ]);
-
-                return $event;
-            });
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addListener(RenderBlockEvent::class, static function (RenderBlockEvent $event): void {
+            $event->setAssets([
+                'js' => ['/hero.js'],
+                'css' => ['/hero.css'],
+                'webpack' => [],
+            ]);
+        });
 
         $helper = new Helper(
             $twig,
@@ -143,5 +140,73 @@ final class HelperTest extends TestCase
         $assetsHtml = $helper->includeAssets();
         self::assertStringContainsString('/hero.css', $assetsHtml);
         self::assertStringContainsString('/hero.js', $assetsHtml);
+    }
+
+    public function testRenderEasyEditorBlockKeepsLegacyGenericListenersWorking(): void
+    {
+        $block = new class($this->createMock(EntityManagerInterface::class)) extends AbstractBlock {
+            public function getName(): string
+            {
+                return 'Legacy Hero';
+            }
+
+            public function getIcon(): string|array
+            {
+                return 'fa-hero';
+            }
+
+            public function getTemplate(): string
+            {
+                return '@EasyEditor/legacy.html.twig';
+            }
+
+            public function getPosition(): int
+            {
+                return 10;
+            }
+
+            public static function configureAssets(): array
+            {
+                return ['js' => [], 'css' => [], 'webpack' => []];
+            }
+
+            public function buildBlock(FormBuilderInterface $builder, array $options): void
+            {
+                $builder->add('content', TextType::class);
+            }
+        };
+
+        $twig = $this->createMock(Environment::class);
+        $twig->expects(self::once())
+            ->method('render')
+            ->with('@EasyEditor/legacy.html.twig', self::callback(static function (array $parameters): bool {
+                return 'legacy-id' === $parameters['settings']['attr_id'];
+            }))
+            ->willReturn('<section>Legacy</section>');
+
+        $dispatcher = new EventDispatcher();
+        $dispatcher->addListener('easy_editor.render_block', static function (GenericEvent $event): void {
+            $settings = $event->getArgument('settings');
+            $settings['attr_id'] = 'legacy-id';
+            $event->setArgument('settings', $settings);
+        });
+
+        $helper = new Helper(
+            $twig,
+            $dispatcher,
+            new BlockCollection([$block]),
+            $this->createMock(FormFactory::class),
+            $this->createMock(EntityManagerInterface::class)
+        );
+
+        $markup = $helper->renderEasyEditorBlock(
+            $twig,
+            ['page' => 'landing'],
+            ['block_type' => $block::class],
+            []
+        );
+
+        self::assertInstanceOf(Markup::class, $markup);
+        self::assertSame('<section>Legacy</section>', (string) $markup);
     }
 }

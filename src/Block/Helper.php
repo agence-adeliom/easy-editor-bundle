@@ -2,8 +2,10 @@
 
 namespace Adeliom\EasyEditorBundle\Block;
 
+use Adeliom\EasyCommonBundle\Event\LegacyEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Adeliom\EasyEditorBundle\Event\RenderBlockEvent;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactory;
 use Twig\Environment;
@@ -111,7 +113,22 @@ class Helper
 
         $blockSettings = $datas;
 
-        $result = $this->eventDispatcher->dispatch(new RenderBlockEvent($block, $blockSettings, $defaultAssets));
+        $result = LegacyEventDispatcher::dispatchGenericEvent(
+            new RenderBlockEvent($block, $blockSettings, $defaultAssets),
+            $this->eventDispatcher,
+            'agence-adeliom/easy-editor-bundle',
+            'easy_editor.render_block',
+            static fn (RenderBlockEvent $event): GenericEvent => new GenericEvent(null, [
+                'settings' => $event->getSettings(),
+                'block' => $event->getBlock(),
+                'assets' => $event->getAssets(),
+            ]),
+            static function (RenderBlockEvent $event, GenericEvent $legacyEvent): void {
+                $event->setBlock($legacyEvent->getArgument('block'));
+                $event->setSettings($legacyEvent->getArgument('settings'));
+                $event->setAssets($legacyEvent->getArgument('assets'));
+            }
+        );
 
         $block = $result->getBlock();
         $blockDatas = $result->getSettings();
