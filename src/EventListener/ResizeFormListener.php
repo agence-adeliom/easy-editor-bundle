@@ -155,7 +155,7 @@ class ResizeFormListener extends \Symfony\Component\Form\Extension\Core\EventLis
             $toDelete = [];
 
             foreach ($data as $name => $child) {
-                if (!$form->has($name)) {
+                if (!$form->has((string) $name)) {
                     $toDelete[] = $name;
                 }
             }
